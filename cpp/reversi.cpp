@@ -259,7 +259,7 @@ int main()
             auto actions = state.legal_actions();
             state.play(actions[rand() % actions.size()]);
         }
-        cerr << state << endl;
+        cerr << state.to_string() << endl;
     }
 }
 

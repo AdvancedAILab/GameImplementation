@@ -119,10 +119,9 @@ struct State
 
     double reward(bool subjective = true) const
     {
-        // 終端状態での勝敗による報酬を返す
         if (win_color_ == 0) return 0;
-        int r = win_color_ == 1 ? 1 : -1;
-        return (subjective && color_ != 1) ? -r : r;
+        int robj = win_color_ == BLACK ? 1 : (win_color_ == WHITE ? -1 : 0);
+        return (subjective && color_ == WHITE) ? -robj : robj;
     }
 
     bool legal(int action) const
@@ -211,7 +210,7 @@ int main()
             auto actions = state.legal_actions();
             state.play(actions[rand() % actions.size()]);
         }
-        cerr << state << endl;
+        cerr << state.to_string() << endl;
     }
 }
 
