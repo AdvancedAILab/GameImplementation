@@ -5,7 +5,7 @@ using namespace std;
 
 const string X = "ABC";
 const string Y = "123";
-const string C = ".OX";
+const string C = "OX.";
 
 struct State
 {
@@ -114,12 +114,12 @@ struct State
     bool terminal() const
     {
         // 終端状態かどうか返す
-        return win_color_ != 0 || int(record_.size()) == L_ * L_;
+        return win_color_ != EMPTY || int(record_.size()) == L_ * L_;
     }
 
     double reward(bool subjective = true) const
     {
-        if (win_color_ == 0) return 0;
+        if (win_color_ == EMPTY) return 0;
         int robj = win_color_ == BLACK ? 1 : (win_color_ == WHITE ? -1 : 0);
         return (subjective && color_ == WHITE) ? -robj : robj;
     }
