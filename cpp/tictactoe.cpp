@@ -22,6 +22,7 @@ struct State
     }
 
     State(const State& s):
+    board_(s.board_),
     color_(s.color_),
     win_color_(s.win_color_),
     record_(s.record_) {}
@@ -119,14 +120,13 @@ struct State
 
     double reward(bool subjective = true) const
     {
-        if (win_color_ == EMPTY) return 0;
         int robj = win_color_ == BLACK ? 1 : (win_color_ == WHITE ? -1 : 0);
         return (subjective && color_ == WHITE) ? -robj : robj;
     }
 
     bool legal(int action) const
     {
-        return action >= 0 && action < L_ * L_ && board_[action] == 0;
+        return action >= 0 && action < L_ * L_ && board_[action] == EMPTY;
     }
 
     vector<int> legal_actions() const
