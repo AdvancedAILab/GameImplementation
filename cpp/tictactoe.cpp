@@ -87,19 +87,19 @@ struct State
 
         // 3つ揃ったか調べる
         int xsum = 0, ysum = 0;
-        for (int y = 0; y < L_; y++) xsum += board_[xy2action(ax, y)];
-        for (int x = 0; x < L_; x++) ysum += board_[xy2action(x, ay)];
-        if (xsum == color_ * L_ || ysum == color_ * L_) win_color_ = color_; 
+        for (int y = 0; y < L_; y++) xsum += board_[xy2action(ax, y)] == color_ ? 1 : 0;
+        for (int x = 0; x < L_; x++) ysum += board_[xy2action(x, ay)] == color_ ? 1 : 0;
+        if (xsum == L_ || ysum == L_) win_color_ = color_;
         
         if (ax == ay) {
             int diagsum = 0;
-            for (int x = 0; x < L_; x++) diagsum += board_[xy2action(x, x)];
-            if (diagsum == color_ * L_) win_color_ = color_;
+            for (int x = 0; x < L_; x++) diagsum += board_[xy2action(x, x)] == color_ ? 1 : 0;
+            if (diagsum == L_) win_color_ = color_;
         }
-        if (ax == 2 - ay) {
+        if (ax == L_ - 1 - ay) {
             int diagsum = 0;
-            for (int x = 0; x < L_; x++) diagsum += board_[xy2action(x, L_ - 1 - x)];
-            if (diagsum == color_ * L_) win_color_ = color_;
+            for (int x = 0; x < L_; x++) diagsum += board_[xy2action(x, L_ - 1 - x)] == color_ ? 1 : 0;
+            if (diagsum == L_) win_color_ = color_;
         }
 
         color_ = opponent(color_);
