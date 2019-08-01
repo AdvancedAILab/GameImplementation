@@ -116,7 +116,7 @@ struct State
         return true;
     }
 
-    double reward(bool subjective = true) const
+    float reward(bool subjective = true) const
     {
         // 終端状態での勝敗による報酬を返す
         int sc = score(subjective);

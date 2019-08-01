@@ -118,7 +118,7 @@ struct State
         return win_color_ != EMPTY || int(record_.size()) == L_ * L_;
     }
 
-    double reward(bool subjective = true) const
+    float reward(bool subjective = true) const
     {
         int robj = win_color_ == BLACK ? 1 : (win_color_ == WHITE ? -1 : 0);
         return (subjective && color_ == WHITE) ? -robj : robj;

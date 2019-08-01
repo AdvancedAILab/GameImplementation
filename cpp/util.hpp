@@ -48,7 +48,7 @@ struct PythonState : state_t
     {
         std::array<int, 2> size = state_t::size();
         std::vector<float> f = state_t::feature();
-        int channels = f.size() / size[0] * size[1];
+        int channels = f.size() / (size[0] * size[1]);
         pybind11::array_t<float> pf({channels, size[0], size[1]});
         std::memcpy(pf.mutable_data(), f.data(), sizeof(float) * f.size());
         return pf;
