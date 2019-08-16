@@ -87,12 +87,12 @@ namespace TicTacToe
             board_[action] = color_;
             int ax = action2x(action), ay = action2y(action);
 
-            // 3つ揃ったか調べる
+            // 一列揃ったか調べる
             int xsum = 0, ysum = 0;
             for (int y = 0; y < L_; y++) xsum += board_[xy2action(ax, y)] == color_ ? 1 : 0;
             for (int x = 0; x < L_; x++) ysum += board_[xy2action(x, ay)] == color_ ? 1 : 0;
             if (xsum == L_ || ysum == L_) win_color_ = color_;
-            
+
             if (ax == ay) {
                 int diagsum = 0;
                 for (int x = 0; x < L_; x++) diagsum += board_[xy2action(x, x)] == color_ ? 1 : 0;

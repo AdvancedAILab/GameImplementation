@@ -51,7 +51,7 @@ namespace Reversi
         string action2str(int action) const
         {
             ostringstream oss;
-            oss << X[action / 3] << Y[action % 3];
+            oss << X[action / L_] << Y[action % L_];
             return oss.str();
         }
 
