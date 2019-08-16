@@ -239,17 +239,17 @@ PYBIND11_MODULE(reversi, m)
 {
     m.doc() = "implementation of game";
 
-    py::class_<PyState>(m, "State")
+    py::class_<PyState>(m, "Reversi")
     .def(pybind11::init<>(), "constructor")
     .def("action2str",    &PyState::action2str, "action index to string")
     .def("str2action",    &PyState::str2action, "string to action index")
     .def("__str__",       &PyState::to_string, "string output")
     .def("copy",          &PyState::copy, "deep copy")
-    .def("clear",         &PyState::clear, "ifnitialize Reversi")
+    .def("clear",         &PyState::clear, "ifnitialize state")
     .def("legal_actions", &PyState::legal_actions, "legal actions")
     .def("action_length", &PyState::action_length, "the number of legal action labels")
-    .def("play",          &PyState::play, "Reversi transition")
-    .def("plays",         &PyState::plays, "sequential Reversi transition")
+    .def("play",          &PyState::play, "state transition")
+    .def("plays",         &PyState::plays, "sequential state transition")
     .def("terminal",      &PyState::terminal, "whether terminal Reversi or not")
     .def("reward",        &PyState::reward, "terminal reward", py::arg("subjective") = false)
     .def("feature",       &PyState::feature, "input feature");
