@@ -1,3 +1,5 @@
+#pragma once
+
 // common code for two-player board game
 
 #include <array>
@@ -30,9 +32,13 @@ inline bool onboard(int pos, int L)
     return pos >= 0 && pos < L * L;
 }
 
-const int D2[4][2] = {
+const int D2[8][2] = {
     {-1, 0},
     {0, -1},
     {0, 1},
     {1, 0},
+    {-1, -1},
+    {-1, 1},
+    {1, -1},
+    {1, 1},
 };

@@ -1,14 +1,16 @@
+#pragma once
+
 #include "util.hpp"
 #include "boardgame.hpp"
 
 using namespace std;
 
-const string X = "ABC";
-const string Y = "123";
-const string C = "OX.";
-
 namespace TicTacToe
 {
+    const string X = "ABC";
+    const string Y = "123";
+    const string C = "OX.";
+
     struct State
     {
         const int L_ = 3;
@@ -76,14 +78,13 @@ namespace TicTacToe
                 }
                 oss << endl;
             }
-            oss << "record = " << record_string() << endl;
+            oss << "record = " << record_string();
             return oss.str();
         }
 
-        void play(const int action)
+        void play(int action)
         {
-            // 行動で状態を進める関数
-            // action は board 上の位置 (0 ~ 8) または行動系列の文字列
+            assert(legal(action));
             board_[action] = color_;
             int ax = action2x(action), ay = action2y(action);
 
@@ -174,52 +175,4 @@ namespace TicTacToe
             return x * L_ + y;
         }
     };
-
-#ifdef PY
-    using PyState = PythonState<State>;
-#endif
-
 }
-
-using namespace TicTacToe;
-
-#ifdef PY
-
-namespace py = pybind11;
-PYBIND11_MODULE(tictactoe, m)
-{
-    m.doc() = "implementation of game";
-
-    py::class_<PyState>(m, "TicTacToe")
-    .def(pybind11::init<>(), "constructor")
-    .def("action2str",    &PyState::action2str, "action index to string")
-    .def("str2action",    &PyState::str2action, "string to action index")
-    .def("__str__",       &PyState::to_string, "string output")
-    .def("copy",          &PyState::copy, "deep copy")
-    .def("clear",         &PyState::clear, "initialize state")
-    .def("legal_actions", &PyState::legal_actions, "legal actions")
-    .def("action_length", &PyState::action_length, "the number of legal action labels")
-    .def("play",          &PyState::play, "state transition")
-    .def("plays",         &PyState::plays, "sequential state transition")
-    .def("terminal",      &PyState::terminal, "whether terminal TicTacToe or not")
-    .def("reward",        &PyState::reward, "terminal reward", py::arg("subjective") = false)
-    .def("feature",       &PyState::feature, "input feature");
-};
-
-#else
-
-// build executable
-
-int main()
-{
-    for (int i = 0; i < 100; i++) {
-        TicTacToe state;
-        while (!state.terminal()) {
-            auto actions = state.legal_actions();
-            state.play(actions[rand() % actions.size()]);
-        }
-        cerr << state.to_string() << endl;
-    }
-}
-
-#endif

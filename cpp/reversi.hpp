@@ -1,14 +1,16 @@
+#pragma once
+
 #include "util.hpp"
 #include "boardgame.hpp"
 
 using namespace std;
 
-const string X = "ABCDEFGH";
-const string Y = "12345678";
-const string C = "XO.";
-
 namespace Reversi
 {
+    const string X = "ABCDEFGH";
+    const string Y = "12345678";
+    const string C = "XO.";
+
     struct State
     {
         int L_ = 6;
@@ -50,6 +52,7 @@ namespace Reversi
 
         string action2str(int action) const
         {
+            if (action == L_ * L_) return "PASS";
             ostringstream oss;
             oss << X[action / L_] << Y[action % L_];
             return oss.str();
@@ -87,14 +90,15 @@ namespace Reversi
             return oss.str();
         }
 
-        void play(const int& action)
+        void play(int action)
         {
-            // 行動で状態を進める関数
-            // action は board 上の位置
-            board_[action] = color_;
-            int flipped = flip_stones(action);
-            score_[color_] += flipped;
-            score_[color_] -= flipped;
+            assert(legal(action));
+            if (action != L_ * L_) {
+                int flipped = flip_stones(action);
+                board_[action] = color_;
+                score_[color_] += 1 + flipped;
+                score_[opponent(color_)] -= flipped;
+            }
             color_ = opponent(color_);
             record_.push_back(action);
         }
@@ -107,15 +111,14 @@ namespace Reversi
 
         bool terminal() const
         {
-            // 終端状態かどうか返す
-            if (score_[0] == 0 || score_[1] == 0
-                || score_[0] + score_[1] == L_ * L_) return true;
-            // if there is no putting actions for both players, it's terninal Reversi
-            for (int i = 0; i < L_ * L_; i++) {
-                if (flipped_positions(i, color_).size()           > 0) return false;
-                if (flipped_positions(i, opponent(color_)).size() > 0) return false;
-            }
-            return true;
+            // check if terminal state
+            bool full = score_[0] + score_[1] == L_ * L_;
+            bool perfect = score_[0] == 0 || score_[1] == 0;
+            bool pass2 = record_.size() >= 2
+                      && record_.back() == L_ * L_
+                      && record_[record_.size() - 2] == L_ * L_;
+            
+            return full || perfect || pass2;
         }
 
         float reward(bool subjective = true) const
@@ -129,10 +132,15 @@ namespace Reversi
 
         bool legal(int action) const
         {
-            if (action < 0 || action >= L_ * L_) return false;
-            if (board_[action] != EMPTY) return false;
-            if (flipped_positions(action).size() == 0) return false;
-            return true;
+            if (onboard(action, L_)) {
+                return sum_of(flip_counts(action)) > 0;
+            } else {
+                if (action != L_ * L_) return false;
+                for (int i = 0; i < L_ * L_; i++) {
+                    if (sum_of(flip_counts(i)) > 0) return false;
+                }
+                return true;
+            }
         }
 
         vector<int> legal_actions() const
@@ -187,88 +195,46 @@ namespace Reversi
             return x * L_ + y;
         }
 
-        vector<int> flipped_positions(int action, int color = EMPTY) const
+        array<int, 8> flip_counts(int action, int color = EMPTY) const
         {
-            vector<int> flipped;
+            array<int, 8> counts;
+            counts.fill(0);
             if (color == EMPTY) color = color_;
-            if (!onboard(action, L_)) return flipped;
-            if (board_[action] != EMPTY) return flipped;
-            for (int d = 0; d < 4; d++) {
+            if (!onboard(action, L_)) return counts;
+            if (board_[action] != EMPTY) return counts;
+            for (int d = 0; d < 8; d++) {
+                int flipped = 0;
                 int x = action2x(action);
                 int y = action2y(action);
-                vector<int> sandwitched;
                 while (1) {
                     x += D2[d][0];
                     y += D2[d][1];
                     int pos = xy2action(x, y);
-                    if (!onboard(x, y, L_)
-                        || (board_[pos] != color && board_[pos] != opponent(color))) {
-                        sandwitched.clear(); // no stones will be sandwitched
+                    if (!onboard(x, y, L_) || board_[pos] == EMPTY) {
+                        flipped = 0; // no stones will be sandwitched
                         break;
                     }
                     if (board_[pos] == color) break;
-                    sandwitched.push_back(pos);
+                    flipped++;
                 }
-                flipped.insert(flipped.end(), sandwitched.begin(), sandwitched.end());
+                counts[d] = flipped;
             }
-            return flipped;
+            return counts;
         }
 
         int flip_stones(int action)
         {
-            auto positions = flipped_positions(action);
-            for (int pos : positions) {
-                board_[pos] = color_;
+            auto counts = flip_counts(action);
+            for (int d = 0; d < 8; d++) {
+                int x = action2x(action);
+                int y = action2y(action);
+                for (int i = 0; i < counts[d]; i++) {
+                    x += D2[d][0];
+                    y += D2[d][1];
+                    board_[xy2action(x, y)] = color_;
+                }
             }
-            return positions.size();
+            return sum_of(counts);
         }
     };
-
-#ifdef PY
-    using PyState = PythonState<State>;
-#endif
-
 }
-
-using namespace Reversi;
-
-#ifdef PY
-
-namespace py = pybind11;
-PYBIND11_MODULE(reversi, m)
-{
-    m.doc() = "implementation of game";
-
-    py::class_<PyState>(m, "Reversi")
-    .def(pybind11::init<>(), "constructor")
-    .def("action2str",    &PyState::action2str, "action index to string")
-    .def("str2action",    &PyState::str2action, "string to action index")
-    .def("__str__",       &PyState::to_string, "string output")
-    .def("copy",          &PyState::copy, "deep copy")
-    .def("clear",         &PyState::clear, "ifnitialize state")
-    .def("legal_actions", &PyState::legal_actions, "legal actions")
-    .def("action_length", &PyState::action_length, "the number of legal action labels")
-    .def("play",          &PyState::play, "state transition")
-    .def("plays",         &PyState::plays, "sequential state transition")
-    .def("terminal",      &PyState::terminal, "whether terminal Reversi or not")
-    .def("reward",        &PyState::reward, "terminal reward", py::arg("subjective") = false)
-    .def("feature",       &PyState::feature, "input feature");
-};
-
-#else
-
-// build executable
-
-int main()
-{
-    for (int i = 0; i < 100; i++) {
-        State state;
-        while (!state.terminal()) {
-            auto actions = state.legal_actions();
-            state.play(actions[rand() % actions.size()]);
-        }
-        cerr << state.to_string() << endl;
-    }
-}
-
-#endif

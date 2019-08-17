@@ -1,9 +1,12 @@
+#pragma once
+
 #include <string>
 #include <vector>
 #include <array>
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <numeric>
 
 static int find(const std::string& s, char sep, std::string::size_type p = 0)
 {
@@ -33,31 +36,38 @@ static std::string join(const std::vector<std::string>& v, const std::string& se
     return os.str();
 }
 
-#ifdef PY
-
-// build for Python module
-
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <pybind11/numpy.h>
-
-template <class state_t>
-struct PythonState : state_t
+template <class T>
+std::ostream& operator <<(std::ostream& ost, const std::vector<T>& v)
 {
-    pybind11::array_t<float> feature() const
-    {
-        std::array<int, 2> size = state_t::size();
-        std::vector<float> f = state_t::feature();
-        int channels = f.size() / (size[0] * size[1]);
-        pybind11::array_t<float> pf({channels, size[0], size[1]});
-        std::memcpy(pf.mutable_data(), f.data(), sizeof(float) * f.size());
-        return pf;
+    ost << "{";
+    if (v.size() > 0) {
+        for (std::size_t i = 0; i < v.size() - 1; i++) ost << v[i] << ", ";
+        ost << v.back();
     }
+    ost << "}";
+    return ost;
+}
 
-    PythonState<state_t> copy() const
-    {
-        return PythonState<state_t>(*this);
+template <class T, std::size_t N>
+std::ostream& operator <<(std::ostream& ost, const std::array<T, N>& v)
+{
+    ost << "{";
+    if (v.size() > 0) {
+        for (std::size_t i = 0; i < v.size() - 1; i++) ost << v[i] << ", ";
+        ost << v.back();
     }
-};
+    ost << "}";
+    return ost;
+}
 
-#endif
+template <class T>
+T sum_of(const std::vector<T>& v)
+{
+    return std::accumulate(v.begin(), v.end(), T(0));
+}
+
+template <class T, std::size_t N>
+T sum_of(const std::array<T, N>& v)
+{
+    return std::accumulate(v.begin(), v.end(), T(0));
+}
