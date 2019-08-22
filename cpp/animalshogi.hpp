@@ -241,7 +241,6 @@ namespace AnimalShogi
             int piece_cap = board_[to];
             if (piece_cap >= 0) {
                 int type = piece2type(piece_cap);
-                cerr << type << endl;
                 hand_[color_][type] += 1;
                 key_ += HAND_KEY[color_][type];
             }
