@@ -71,11 +71,11 @@ namespace TicTacToe
         {
             ostringstream oss;
             oss << "  ";
-            for (int y = 0; y < L_; y++) oss << Y[y];
+            for (int x = 0; x < L_; x++) oss << X[x];
             oss << endl;
-            for (int x = 0; x < L_; x++) {
-                oss << X[x] << " ";
-                for (int y = 0; y < L_; y++) {
+            for (int y = 0; y < L_; y++) {
+                oss << Y[y] << " ";
+                for (int x = 0; x < L_; x++) {
                     oss << C[board_[xy2action(x, y)]];
                 }
                 oss << endl;
@@ -152,29 +152,26 @@ namespace TicTacToe
         vector<float> feature() const
         {
             vector<float> f(2 * L_ * L_, 0.0f);
-            for (int x = 0; x < L_; x++) {
-                for (int y = 0; y < L_; y++)  {
-                    int a = xy2action(x, y);
-                    if      (board_[a] == color_)           f[a] = 1;
-                    else if (board_[a] == opponent(color_)) f[L_ * L_ + a] = 1;
-                }
+            for (int pos = 0; pos < L_ * L_; pos++) {
+                if (board_[pos] == color_)           f[pos          ] = 1;
+                if (board_[pos] == opponent(color_)) f[pos + L_ * L_] = 1;
             }
             return f;
         }
 
         int action2x(int action) const
         {
-            return action / L_;
+            return action % L_;
         }
 
         int action2y(int action) const
         {
-            return action % L_;
+            return action / L_;
         }
 
         int xy2action(int x, int y) const
         {
-            return x * L_ + y;
+            return y * L_ + x;
         }
     };
 }

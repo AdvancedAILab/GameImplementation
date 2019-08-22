@@ -37,6 +37,11 @@ inline bool onboard(int pos, int L)
     return pos >= 0 && pos < L * L;
 }
 
+inline bool onboard(int pos, int LX, int LY)
+{
+    return pos >= 0 && pos < LX * LY;
+}
+
 const int D2[8][2] = {
     {-1,  0},
     { 0, -1},

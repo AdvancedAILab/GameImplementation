@@ -2,6 +2,7 @@
 #include "tictactoe.hpp"
 #include "reversi.hpp"
 #include "animalshogi.hpp"
+#include "go.hpp"
 
 using namespace std;
 
@@ -53,6 +54,19 @@ int main(int argc, char *argv[])
             cerr << state.to_string() << endl;
             cerr << actions << endl;
             cerr << map_list(actions, AnimalShogi::State::action2str) << endl;
+            state.play(actions[rand() % actions.size()]);
+        }
+        cerr << state.to_string() << endl;
+        cerr << "reward = " << state.reward(false) << endl;
+    }
+
+    Go::init();
+    for (int i = 0; i < 10; i++) {
+        Go::State state;
+        while (!state.terminal()) {
+            auto actions = state.legal_actions();
+            cerr << state.to_string() << endl;
+            cerr << actions << endl;
             state.play(actions[rand() % actions.size()]);
         }
         cerr << state.to_string() << endl;

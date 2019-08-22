@@ -2,6 +2,7 @@
 #include "tictactoe.hpp"
 #include "reversi.hpp"
 #include "animalshogi.hpp"
+#include "go.hpp"
 
 using namespace std;
 
@@ -89,4 +90,22 @@ PYBIND11_MODULE(games, m)
     .def("terminal",      &PyState2::terminal, "whether terminal state or not")
     .def("reward",        &PyState2::reward, "terminal reward", py::arg("subjective") = false)
     .def("feature",       &PyState2::feature, "input feature");
+
+    Go::init();
+    using PyState3 = PythonState<Go::State>;
+
+    py::class_<PyState3>(m, "Go")
+    .def(pybind11::init<>(), "constructor")
+    .def("action2str",    &PyState3::action2str, "action index to string")
+    .def("str2action",    &PyState3::str2action, "string to action index")
+    .def("__str__",       &PyState3::to_string, "string output")
+    .def("copy",          &PyState3::copy, "deep copy")
+    .def("clear",         &PyState3::clear, "initialize state")
+    .def("legal_actions", &PyState3::legal_actions, "legal actions")
+    .def("action_length", &PyState3::action_length, "the number of legal action labels")
+    .def("play",          &PyState3::play, "state transition")
+    .def("plays",         &PyState3::plays, "sequential state transition")
+    .def("terminal",      &PyState3::terminal, "whether terminal state or not")
+    .def("reward",        &PyState3::reward, "terminal reward", py::arg("subjective") = false)
+    .def("feature",       &PyState3::feature, "input feature");
 };
