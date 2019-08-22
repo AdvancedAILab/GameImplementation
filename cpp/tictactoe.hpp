@@ -11,6 +11,8 @@ namespace TicTacToe
     const string Y = "123";
     const string C = "OX.";
 
+    inline void init() {}
+
     struct State
     {
         const int L_ = 3;

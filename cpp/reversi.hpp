@@ -11,6 +11,8 @@ namespace Reversi
     const string Y = "12345678";
     const string C = "XO.";
 
+    inline void init() {}
+
     struct State
     {
         int L_ = 6;
@@ -210,7 +212,7 @@ namespace Reversi
                     x += D2[d][0];
                     y += D2[d][1];
                     int pos = xy2action(x, y);
-                    if (!onboard(x, y, L_) || board_[pos] == EMPTY) {
+                    if (!onboard_xy(x, y, L_) || board_[pos] == EMPTY) {
                         flipped = 0; // no stones will be sandwitched
                         break;
                     }

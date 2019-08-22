@@ -22,9 +22,14 @@ std::array<int, N> operator +(const std::array<int, N>& a, const std::array<int,
     return c;
 }
 
-inline bool onboard(int x, int y, int L)
+inline bool onboard_xy(int x, int y, int L)
 {
     return x >= 0 && x < L && y >= 0 && y < L;
+}
+
+inline bool onboard_xy(int x, int y, int LX, int LY)
+{
+    return x >= 0 && x < LX && y >= 0 && y < LY;
 }
 
 inline bool onboard(int pos, int L)
@@ -33,12 +38,12 @@ inline bool onboard(int pos, int L)
 }
 
 const int D2[8][2] = {
-    {-1, 0},
-    {0, -1},
-    {0, 1},
-    {1, 0},
+    {-1,  0},
+    { 0, -1},
+    { 0,  1},
+    { 1,  0},
     {-1, -1},
-    {-1, 1},
-    {1, -1},
-    {1, 1},
+    {-1,  1},
+    { 1, -1},
+    { 1,  1},
 };
