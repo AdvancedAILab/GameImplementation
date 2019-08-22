@@ -230,7 +230,8 @@ namespace AnimalShogi
                 assert(hand_[color_][drop_type] >= 0);
             } else {
                 piece = board_[from];
-                if (piece2type(piece) == CHICK) {
+                if (piece2type(piece) == CHICK
+                    && position2x(to) == (color_ == BLACK ? 0 : (LX - 1))) {
                     piece = typecolor2piece(FOWL, piece2color(piece));
                 }
 
@@ -240,6 +241,9 @@ namespace AnimalShogi
 
             int piece_cap = board_[to];
             if (piece_cap >= 0) {
+                if (piece2type(piece_cap) == FOWL) {
+                    piece_cap = typecolor2piece(CHICK, piece2color(piece_cap));
+                }
                 int type = piece2type(piece_cap);
                 hand_[color_][type] += 1;
                 key_ += HAND_KEY[color_][type];
