@@ -236,7 +236,6 @@ namespace Go
         }
 
         int remove_ren(int pos) {
-            cerr << "remove ren on " << pos << endl;
             int ren_id = ren_id_[pos];
             int remove_cnt = ren_[ren_id].size_;
             position_key_ ^= ren_[ren_id].key_;
