@@ -40,7 +40,18 @@ namespace Go
         gnugo = new GNUGo(japanese);
     }
 
-    inline void init() {}
+    union Entry
+    {
+        short s_[4];
+        unsigned long long key_;
+    };
+
+    array<Entry, 65536 + 3> scores;
+
+    inline void init()
+    {
+        memset(scores.data(), 0, sizeof(scores));
+    }
 
     struct Ren {
         set<int> libs_;
@@ -65,7 +76,7 @@ namespace Go
         float komi_;
         bool superko_;
         bool japanese_;
-        vector<array<long long, 2>> STONE_KEY_;
+        vector<array<long long, 3>> STONE_KEY_;
 
         vector<int> board_;
         int color_;
@@ -90,6 +101,7 @@ namespace Go
             for (int pos = 0; pos < B_; pos++) {
                 STONE_KEY_[pos][0] = mt();
                 STONE_KEY_[pos][1] = mt();
+                STONE_KEY_[pos][2] = mt();
             }
 
             clear();
@@ -132,7 +144,7 @@ namespace Go
                 next_[pos] = pos;
                 ren_id_[pos] = pos;
             }
-            position_key_ = 0;
+            position_key_ = -1;
             position_keys_.clear();
             record_.clear();
         }
@@ -284,7 +296,7 @@ namespace Go
 
         bool terminal() const
         {
-            // ignore 3-ko infinity games
+            // ignore 3-ko infinite games
             if (record_.size() >= B_ * 3) return true;
             // consecutive passes
             return record_.size() >= 2
@@ -361,22 +373,38 @@ namespace Go
 
         int score(bool subjective = true) const
         {
-            if (!gnugo) open_gnugo(japanese_);
+            float sc = 0;
 
-            gnugo->communicate("name");
-            gnugo->communicate("boardsize " + std::to_string(LX_));
-            gnugo->communicate("komi " + std::to_string(komi_));
-            gnugo->communicate("clear_board");
-            int color = BLACK;
-            for (int action : record_) {
-                ostringstream oss;
-                oss << "play " << CC[color] << " " << action2str(action);
-                gnugo->communicate(oss.str());
-                color = opponent(color);
+            unsigned long long state_key = position_key_;
+            if (ko_ != -1) state_key ^= STONE_KEY_[ko_][2];
+            state_key ^= color_;
+            int index = state_key % scores.size();
+            Entry e = scores[index];
+
+            if (e.key_ >> 16 == state_key >> 16) {
+                sc = e.s_[0] / 2.0f;
+            } else {
+                if (!gnugo) open_gnugo(japanese_);
+
+                gnugo->communicate("name");
+                gnugo->communicate("boardsize " + std::to_string(LX_));
+                gnugo->communicate("komi " + std::to_string(komi_));
+                gnugo->communicate("clear_board");
+                int color = BLACK;
+                for (int action : record_) {
+                    ostringstream oss;
+                    oss << "play " << CC[color] << " " << action2str(action);
+                    gnugo->communicate(oss.str());
+                    color = opponent(color);
+                }
+                string score_str = gnugo->communicate("final_score");
+                float abs_sc = stof(split(split(strip(score_str, '\n'), ' ')[1], '+').back());
+                sc = contains(score_str, "W+") ? -abs_sc : abs_sc;
+                
+                e.key_ = (state_key >> 16) << 16;
+                e.s_[0] = sc * 2;
+                scores[index] = e;
             }
-            string score_str = gnugo->communicate("final_score");
-            float abs_sc = stof(split(split(strip(score_str, '\n'), ' ')[1], '+').back());
-            float sc = contains(score_str, "W+") ? -abs_sc : abs_sc;
 
             if (subjective && color_ == WHITE) sc = -sc;
             return sc;
