@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <cstdio>
 #include <cassert>
+#include <cstring>
 #include <string>
 #include <vector>
 #include <array>
