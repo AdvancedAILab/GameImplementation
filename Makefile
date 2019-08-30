@@ -12,7 +12,8 @@ SRCS       = $(SRC_DIR)/main.cpp
 OBJS       = $(subst $(SRC_DIR),$(OBJ_DIR), $(SRCS:.cpp=.o))
 TARGET     = $(BLD_DIR)/main
 PYTARGET   = $(BLD_DIR)/games.so
-PYFLAGS    = -shared -fPIC $(shell python3-config --cflags --ldflags)
+PYFLAGS    = -fPIC
+PYLDFLAGS  = -shared $(shell python3-config --cflags --ldflags)
 PYINCLUDES = $(INCLUDE) $(shell python3-config --includes) -I./modules/pybind11/include/
 
 DEPENDS  = $(OBJS:.o=.d)
@@ -23,7 +24,7 @@ $(TARGET): $(OBJS) $(LIBS)
 	$(CXX) $(OPT) -o $@ $(OBJS) $(LDFLAGS)
 
 $(PYTARGET): $(OBJ_DIR)/pybind.o $(LIBS)
-	$(CXX) $(OPT) -o $@ $(OBJ_DIR)/pybind.o $(PYFLAGS)
+	$(CXX) $(OPT) -o $@ $(OBJ_DIR)/pybind.o $(PYLDFLAGS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@if [ ! -d $(OBJ_DIR) ]; \
@@ -32,7 +33,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) $(OPT) $(INCLUDES) -o $@ -c $< 
 
 $(OBJ_DIR)/pybind.o: $(SRC_DIR)/pybind.cpp
-	$(CXX) $(CXXFLAGS) $(OPT) $(PYINCLUDES) -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(OPT) $(PYFLAGS) $(PYINCLUDES) -o $@ -c $<
 
 clean:
 	$(RM) -r $(OBJ_DIR) $(TARGET) $(PYTARGET)
