@@ -113,6 +113,7 @@ namespace TicTacToe
 
         void plays(const string& s)
         {
+            if (s.size() == 0) return;
             vector<string> ss = split(s, ' ');
             for (const string& s : ss) play(str2action(s));
         }
