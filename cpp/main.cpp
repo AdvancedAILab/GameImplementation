@@ -1,4 +1,5 @@
 #include "util.hpp"
+#include "search.hpp"
 #include "tictactoe.hpp"
 #include "reversi.hpp"
 #include "animalshogi.hpp"
@@ -13,7 +14,7 @@ string map_list(const vector<int>& v, const callback_t& callback)
 {
     vector<string> sv;
     for (int val : v) sv.push_back(callback(val));
-    return join(sv, " ");
+    return join(sv, ", ");
 }
 
 int main(int argc, char *argv[])
@@ -27,6 +28,8 @@ int main(int argc, char *argv[])
             auto actions = state.legal_actions();
             cerr << state.to_string() << endl;
             cerr << actions << endl;
+            cerr << minimaxSearch(state) << endl;
+            cerr << alphaBetaSearch(state) << endl;
             state.play(actions[rand() % actions.size()]);
         }
         cerr << state.to_string() << endl;

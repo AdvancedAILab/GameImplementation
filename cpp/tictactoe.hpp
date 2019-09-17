@@ -2,6 +2,7 @@
 
 #include "util.hpp"
 #include "boardgame.hpp"
+#include "search.hpp"
 
 using namespace std;
 
@@ -120,6 +121,15 @@ namespace TicTacToe
             record_.push_back(action);
         }
 
+        void undo()
+        {
+            int action = record_.back();
+            board_[action] = EMPTY;
+            win_color_ = EMPTY;
+            color_ = opponent(color_);
+            record_.pop_back();
+        }
+
         void plays(const string& s)
         {
             if (s.size() == 0) return;
@@ -146,12 +156,17 @@ namespace TicTacToe
 
         vector<int> legal_actions() const
         {
-            // 可能な行動リストを返す
             vector<int> actions;
             for (int i = 0; i < L_ * L_; i++) {
                 if (legal(i)) actions.push_back(i);
             }
             return actions;
+        }
+
+        pair<vector<int>, float> best_actions() const
+        {
+            State s(*this);
+            return alphaBetaSearch(s);
         }
 
         int action_length() const

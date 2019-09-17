@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <utility>
 #include <iostream>
 #include <sstream>
 #include <algorithm>
@@ -75,6 +76,13 @@ std::ostream& operator <<(std::ostream& ost, const std::array<T, N>& v)
         ost << v.back();
     }
     ost << "}";
+    return ost;
+}
+
+template <class T0, class T1>
+std::ostream& operator <<(std::ostream& ost, const std::pair<T0, T1>& v)
+{
+    ost << "(" << v.first << ", " << v.second << ")";
     return ost;
 }
 
