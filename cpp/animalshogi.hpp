@@ -187,13 +187,15 @@ namespace AnimalShogi
             return fromto2action(from, to);
         }
 
-        string path2str(const vector<int>& path) const {
+        string path2str(const vector<int>& path) const
+        {
             vector<string> ss;
             for (int action : path) ss.push_back(action2str(action));
             return join(ss, " ");
         }
 
-        vector<int> str2path(const string& s) const {
+        vector<int> str2path(const string& s) const
+        {
             vector<int> path;
             if (s.size() == 0) return path;
             for (const string& as : split(s, ' ')) path.push_back(str2action(as));
