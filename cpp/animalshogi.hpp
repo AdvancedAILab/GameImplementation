@@ -17,7 +17,7 @@ namespace AnimalShogi
 
     enum {
         EMPTY = -1,
-        LION, GIRRAFE, ELEPHANT, CHICK, FOWL 
+        LION, GIRRAFE, ELEPHANT, CHICK, FOWL
     };
 
     const string ORIG = "gle c  C ELG";
@@ -44,7 +44,7 @@ namespace AnimalShogi
     long long PIECE_KEY[10][B];
     long long HAND_KEY[2][4];
 
-    void init() {
+    inline void init() {
         mt19937_64 mt(0);
         for (int p = 0; p < 10; p++) {
             for (int pos = 0; pos < B; pos++) {
@@ -56,51 +56,6 @@ namespace AnimalShogi
                 HAND_KEY[c][type] = mt();
             }
         }
-    }
-
-    inline int action2from(int action)
-    {
-        return action % (B + 4);
-    }
-
-    inline int action2to(int action)
-    {
-        return action / (B + 4);
-    }
-
-    inline int fromto2action(int from, int to)
-    {
-        return to * (B + 4) + from;
-    }
-
-    inline int piece2color(int piece)
-    {
-        return piece / 5;
-    }
-
-    inline int piece2type(int piece)
-    {
-        return piece % 5;
-    }
-
-    inline int typecolor2piece(int type, int color)
-    {
-        return color * 5 + type;
-    }
-
-    inline int position2x(int pos)
-    {
-        return pos % LX;
-    }
-
-    inline int position2y(int pos)
-    {
-        return pos / LX;
-    }
-
-    inline int xy2position(int x, int y)
-    {
-        return y * LX + x;
     }
 
     struct State
@@ -159,28 +114,73 @@ namespace AnimalShogi
             record_.clear();
         }
 
-        static string position2str(int pos)
+        int action2from(int action) const
+        {
+            return action % (B + 4);
+        }
+
+        int action2to(int action) const
+        {
+            return action / (B + 4);
+        }
+
+        int fromto2action(int from, int to) const
+        {
+            return to * (B + 4) + from;
+        }
+
+        int piece2color(int piece) const
+        {
+            return piece / 5;
+        }
+
+        int piece2type(int piece) const
+        {
+            return piece % 5;
+        }
+
+        int typecolor2piece(int type, int color) const
+        {
+            return color * 5 + type;
+        }
+
+        int position2x(int pos) const
+        {
+            return pos % LX;
+        }
+
+        int position2y(int pos) const
+        {
+            return pos / LX;
+        }
+
+        int xy2position(int x, int y) const
+        {
+            return y * LX + x;
+        }
+
+        string position2str(int pos) const
         {
             ostringstream oss;
             oss << Y[position2y(pos)] << X[position2x(pos)];
             return oss.str();
         }
 
-        static int str2position(const string& s)
+        int str2position(const string& s) const
         {
             int y = Y.find(s[0]);
             int x = X.find(s[1]);
             return xy2position(x, y);
         }
 
-        static string action2str(int action)
+        string action2str(int action) const
         {
             int from = action2from(action);
             int to   = action2to(action);
             return position2str(from) + position2str(to);
         }
 
-        static int str2action(const string& s)
+        int str2action(const string& s) const
         {
             int from = str2position(s.substr(0, 2));
             int to   = str2position(s.substr(2, 2));
@@ -309,7 +309,7 @@ namespace AnimalShogi
                 if (board_[from] < 0) return false;
             }
             int to = action2to(action);
-            if (board_[to] >= 0 && piece2color(board_[to]) == color_) return false; 
+            if (board_[to] >= 0 && piece2color(board_[to]) == color_) return false;
             return true;
         }
 
