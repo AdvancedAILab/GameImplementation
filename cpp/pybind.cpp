@@ -3,6 +3,7 @@
 #include "reversi.hpp"
 #include "animalshogi.hpp"
 #include "go.hpp"
+#include "geister.hpp"
 
 using namespace std;
 
@@ -117,4 +118,24 @@ PYBIND11_MODULE(games, m)
     .def("terminal",      &PyState3::terminal, "whether terminal state or not")
     .def("reward",        &PyState3::reward, "terminal reward", py::arg("subjective") = false)
     .def("feature",       &PyState3::feature, "input feature");
+
+    Geister::init();
+    using PyState4 = PythonState<Geister::State>;
+
+    py::class_<PyState4>(m, "Geister")
+    .def(pybind11::init<>(), "constructor")
+    .def("action2str",    &PyState4::action2str, "action index to string")
+    .def("str2action",    &PyState4::str2action, "string to action index")
+    .def("str2path",      &PyState4::str2path, "string to ations list")
+    .def("record_string", &PyState4::record_string, "string output of current path")
+    .def("__str__",       &PyState4::to_string, "string output")
+    .def("copy",          &PyState4::copy, "deep copy")
+    .def("clear",         &PyState4::clear, "initialize state")
+    .def("legal_actions", &PyState4::legal_actions, "legal actions")
+    .def("action_length", &PyState4::action_length, "the number of legal action labels")
+    .def("play",          &PyState4::play, "state transition")
+    .def("plays",         &PyState4::plays, "sequential state transition")
+    .def("terminal",      &PyState4::terminal, "whether terminal state or not")
+    .def("reward",        &PyState4::reward, "terminal reward", py::arg("subjective") = false)
+    .def("feature",       &PyState4::feature, "input feature");
 };
