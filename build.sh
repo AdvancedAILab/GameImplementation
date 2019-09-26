@@ -17,4 +17,5 @@ fi
 
 popd
 
+make clean
 make -j4
