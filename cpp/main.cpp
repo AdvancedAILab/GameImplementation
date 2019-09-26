@@ -10,14 +10,6 @@ using namespace std;
 
 // executable
 
-template <class callback_t>
-string map_list(const vector<int>& v, const callback_t& callback)
-{
-    vector<string> sv;
-    for (int val : v) sv.push_back(callback(val));
-    return join(sv, ", ");
-}
-
 int main(int argc, char *argv[])
 {
     srand(0);
@@ -57,7 +49,6 @@ int main(int argc, char *argv[])
             auto actions = state.legal_actions();
             cerr << state.to_string() << endl;
             cerr << actions << endl;
-            cerr << map_list(actions, AnimalShogi::State::action2str) << endl;
             state.play(actions[rand() % actions.size()]);
         }
         cerr << state.to_string() << endl;
