@@ -19,6 +19,7 @@ namespace Reversi
         vector<int> board_;
         int color_;
         array<int, 2> score_;
+        vector<array<int, 8>> flipped_counts_;
         vector<int> record_;
 
         State()
@@ -32,6 +33,7 @@ namespace Reversi
         board_(s.board_),
         color_(s.color_),
         score_(s.score_),
+        flipped_counts_(s.flipped_counts_),
         record_(s.record_) {}
 
         array<int, 2> size() const
@@ -96,7 +98,7 @@ namespace Reversi
                 }
                 oss << endl;
             }
-            oss << score_[0] << " - " << score_[1] << endl; 
+            oss << score_[0] << " - " << score_[1] << endl;
             oss << "record = " << record_string();
             return oss.str();
         }
@@ -105,13 +107,31 @@ namespace Reversi
         {
             assert(legal(action));
             if (action != L_ * L_) {
-                int flipped = flip_stones(action);
+                auto counts = flip_counts(action);
+                int flipped = flip_stones(action, counts);
                 board_[action] = color_;
                 score_[color_] += 1 + flipped;
                 score_[opponent(color_)] -= flipped;
+                flipped_counts_.push_back(counts);
             }
             color_ = opponent(color_);
             record_.push_back(action);
+        }
+
+        void undo()
+        {
+            assert(!record_.empty());
+            int action = record_.back();
+            if (action != L_ * L_) {
+                auto counts = flipped_counts_.back();
+                int flipped = flip_stones(action, counts);
+                board_[action] = EMPTY;
+                score_[opponent(color_)] -= 1 + flipped;
+                score_[color_] += flipped;
+                flipped_counts_.pop_back();
+            }
+            color_ = opponent(color_);
+            record_.pop_back();
         }
 
         void plays(const string& s)
@@ -129,7 +149,7 @@ namespace Reversi
             bool pass2 = record_.size() >= 2
                       && record_.back() == L_ * L_
                       && record_[record_.size() - 2] == L_ * L_;
-            
+
             return full || perfect || pass2;
         }
 
@@ -166,6 +186,12 @@ namespace Reversi
                 actions.push_back(L_ * L_); // pass
             }
             return actions;
+        }
+
+        pair<vector<int>, float> best_actions() const
+        {
+            State s(*this);
+            return alphaBetaSearch(s);
         }
 
         int action_length() const
@@ -231,9 +257,8 @@ namespace Reversi
             return counts;
         }
 
-        int flip_stones(int action)
+        int flip_stones(int action, const array<int, 8>& counts)
         {
-            auto counts = flip_counts(action);
             for (int d = 0; d < 8; d++) {
                 int x = action2x(action);
                 int y = action2y(action);
@@ -241,7 +266,8 @@ namespace Reversi
                     x += D2[d][0];
                     y += D2[d][1];
                     assert(onboard_xy(x, y, L_));
-                    board_[xy2action(x, y)] = color_;
+                    int pos = xy2action(x, y);
+                    board_[pos] = opponent(board_[pos]);
                 }
             }
             return sum_of(counts);
