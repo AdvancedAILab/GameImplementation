@@ -123,6 +123,7 @@ namespace TicTacToe
 
         void undo()
         {
+            assert(!record_.empty());
             int action = record_.back();
             board_[action] = EMPTY;
             win_color_ = EMPTY;
