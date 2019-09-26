@@ -240,6 +240,7 @@ namespace Reversi
                 for (int i = 0; i < counts[d]; i++) {
                     x += D2[d][0];
                     y += D2[d][1];
+                    assert(onboard_xy(x, y, L_));
                     board_[xy2action(x, y)] = color_;
                 }
             }
