@@ -26,19 +26,19 @@ namespace AnimalShogi
 
     // effect
     const int LONG[5][8] = {
-        {0, 0, 0, 0, 0, 0, 0, 0},
-        {1, 1, 1, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 1, 1, 1},
-        {0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0}, // L
+        {1, 1, 1, 1, 0, 0, 0, 0}, // G
+        {0, 0, 0, 0, 1, 1, 1, 1}, // E
+        {0, 0, 0, 0, 0, 0, 0, 0}, // C
+        {0, 0, 0, 0, 0, 0, 0, 0}, // F
     };
 
     const int SHORT[5][2][8] = {
-        {{1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1, 1, 1}},
-        {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
-        {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
-        {{1, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 1, 0, 0, 0, 0}},
-        {{1, 1, 1, 1, 1, 1, 0, 0}, {1, 1, 1, 1, 0, 0, 1, 1}},
+        {{1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1, 1, 1}}, // L
+        {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}}, // G
+        {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}}, // E
+        {{1, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 1, 0, 0, 0, 0}}, // C
+        {{1, 1, 1, 1, 1, 1, 0, 0}, {1, 1, 1, 1, 0, 0, 1, 1}}, // F
     };
 
     long long PIECE_KEY[10][B];
@@ -65,6 +65,7 @@ namespace AnimalShogi
         int color_;
         long long key_;
         set<long long> keys_;
+        vector<int> captured_;
         vector<int> record_;
 
         State()
@@ -78,6 +79,7 @@ namespace AnimalShogi
         color_(s.color_),
         key_(s.key_),
         keys_(s.keys_),
+        captured_(s.captured_),
         record_(s.record_) {}
 
         array<int, 2> size() const
@@ -103,7 +105,7 @@ namespace AnimalShogi
 
         void clear()
         {
-            board_.fill(-1);
+            board_.fill(EMPTY);
             for (auto& h : hand_) {
                 h.fill(0);
             }
@@ -111,6 +113,7 @@ namespace AnimalShogi
             set_sfen(ORIG);
             color_ = BLACK;
             keys_.clear();
+            captured_.clear();
             record_.clear();
         }
 
@@ -142,6 +145,21 @@ namespace AnimalShogi
         int typecolor2piece(int type, int color) const
         {
             return color * 5 + type;
+        }
+
+        int promote(int piece) const
+        {
+            if (piece2type(piece) == CHICK) {
+                return typecolor2piece(FOWL, piece2color(piece));
+            }
+            return piece;
+        }
+
+        int unpromote(int piece) const {
+            if (piece2type(piece) == FOWL) {
+                return typecolor2piece(CHICK, piece2color(piece));
+            }
+            return piece;
         }
 
         int position2x(int pos) const
@@ -228,36 +246,37 @@ namespace AnimalShogi
 
         void play(int action)
         {
+            assert(legal(action));
             keys_.insert(key_ ^ color_);
 
             int from = action2from(action), to = action2to(action);
-            int piece = -1;
-
-            if (from >= B) {
-                int drop_type = from - B;
-                piece = typecolor2piece(drop_type, color_);
-
-                hand_[color_][drop_type] -= 1;
-                assert(hand_[color_][drop_type] >= 0);
-            } else {
-                piece = board_[from];
-                if (piece2type(piece) == CHICK
-                    && position2x(to) == (color_ == BLACK ? 0 : (LX - 1))) {
-                    piece = typecolor2piece(FOWL, piece2color(piece));
-                }
-
-                board_[from] = -1;
-                key_ -= PIECE_KEY[piece][from];
-            }
 
             int piece_cap = board_[to];
             if (piece_cap >= 0) {
-                if (piece2type(piece_cap) == FOWL) {
-                    piece_cap = typecolor2piece(CHICK, piece2color(piece_cap));
-                }
-                int type = piece2type(piece_cap);
+                board_[to] = EMPTY;
+                key_ -= PIECE_KEY[piece_cap][to];
+                int type = piece2type(unpromote(piece_cap));
                 hand_[color_][type] += 1;
                 key_ += HAND_KEY[color_][type];
+            }
+            captured_.push_back(piece_cap);
+
+            int piece = -1;
+            if (from >= B) {
+                int type = from - B;
+                piece = typecolor2piece(type, color_);
+
+                assert(hand_[color_][type] > 0);
+                hand_[color_][type] -= 1;
+                key_ -= HAND_KEY[color_][type];
+            } else {
+                piece = board_[from];
+                if (position2x(to) == (color_ == BLACK ? 0 : (LX - 1))) {
+                    piece = promote(piece);
+                }
+
+                board_[from] = EMPTY;
+                key_ -= PIECE_KEY[piece][from];
             }
 
             board_[to] = piece;
@@ -265,6 +284,48 @@ namespace AnimalShogi
 
             color_ = opponent(color_);
             record_.push_back(action);
+        }
+
+        void undo()
+        {
+            assert(!record_.empty());
+            int action = record_.back();
+            record_.pop_back();
+            color_ = opponent(color_);
+
+            int from = action2from(action), to = action2to(action);
+            int piece = board_[to];
+
+            board_[to] = EMPTY;
+            key_ -= PIECE_KEY[piece][to];
+
+            if (from >= B) {
+                int type = from - B;
+                hand_[color_][type] += 1;
+                key_ += HAND_KEY[color_][type];
+            } else {
+                piece = board_[from];
+                if (position2x(from) != (color_ == BLACK ? 0 : (LX - 1))) {
+                    piece = unpromote(piece);
+                }
+
+                board_[from] = piece;
+                key_ += PIECE_KEY[piece][from];
+            }
+
+            assert(!captured_.empty());
+            int piece_cap = captured_.back();
+            captured_.pop_back();
+            if (piece_cap >= 0) {
+                int type = piece2type(unpromote(piece_cap));
+                assert(hand_[color_][type] > 0);
+                hand_[color_][type] -= 1;
+                key_ -= HAND_KEY[color_][type];
+                board_[to] = piece_cap;
+                key_ += PIECE_KEY[piece_cap][to];
+            }
+
+            keys_.erase(key_ ^ color_);
         }
 
         void plays(const string& s)
