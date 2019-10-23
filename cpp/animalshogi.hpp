@@ -33,12 +33,12 @@ namespace AnimalShogi
         {0, 0, 0, 0, 0, 0, 0, 0}, // F
     };
 
-    const int SHORT[5][2][8] = {
-        {{1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1, 1, 1}}, // L
-        {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}}, // G
-        {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}}, // E
-        {{1, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 1, 0, 0, 0, 0}}, // C
-        {{1, 1, 1, 1, 1, 1, 0, 0}, {1, 1, 1, 1, 0, 0, 1, 1}}, // F
+    const int SHORT[5][8] = {
+        {1, 1, 1, 1, 1, 1, 1, 1}, // L
+        {0, 0, 0, 0, 0, 0, 0, 0}, // G
+        {0, 0, 0, 0, 0, 0, 0, 0}, // E
+        {1, 0, 0, 0, 0, 0, 0, 0}, // C
+        {1, 1, 1, 1, 1, 1, 0, 0}, // F
     };
 
     long long PIECE_KEY[10][B];
@@ -262,14 +262,14 @@ namespace AnimalShogi
             captured_.push_back(piece_cap);
 
             int piece = -1;
-            if (from >= B) {
+            if (from >= B) { // drop
                 int type = from - B;
                 piece = typecolor2piece(type, color_);
 
                 assert(hand_[color_][type] > 0);
                 hand_[color_][type] -= 1;
                 key_ -= HAND_KEY[color_][type];
-            } else {
+            } else { // move
                 piece = board_[from];
                 if (position2x(to) == (color_ == BLACK ? 0 : (LX - 1))) {
                     piece = promote(piece);
@@ -299,11 +299,11 @@ namespace AnimalShogi
             board_[to] = EMPTY;
             key_ -= PIECE_KEY[piece][to];
 
-            if (from >= B) {
+            if (from >= B) { // drop
                 int type = from - B;
                 hand_[color_][type] += 1;
                 key_ += HAND_KEY[color_][type];
-            } else {
+            } else { // move
                 piece = board_[from];
                 if (position2x(from) != (color_ == BLACK ? 0 : (LX - 1))) {
                     piece = unpromote(piece);
@@ -361,11 +361,11 @@ namespace AnimalShogi
         bool legal(int action) const
         {
             int from = action2from(action);
-            if (from >= B) {
-                int drop_type = from - B;
-                assert(drop_type < 4);
-                if (hand_[color_][drop_type] == 0) return false;
-            } else {
+            if (from >= B) { // drop
+                int type = from - B;
+                assert(type < 4);
+                if (hand_[color_][type] == 0) return false;
+            } else { // move
                 assert(from >= 0);
                 if (board_[from] < 0) return false;
             }
@@ -387,7 +387,8 @@ namespace AnimalShogi
                     int x = position2x(from), y = position2y(from);
                     // short
                     for (int d = 0; d < 8; d++) {
-                        if (SHORT[type][color_][d]) {
+                        int dd = color_ == BLACK ? d : point_symmetry(d);
+                        if (SHORT[type][dd]) {
                             int x_to = x + D2[d][0], y_to = y + D2[d][1];
                             if (onboard_xy(x_to, y_to, LX, LY)) {
                                 int to = xy2position(x_to, y_to);
@@ -400,7 +401,8 @@ namespace AnimalShogi
                     }
                     // long
                     for (int d = 0; d < 8; d++) {
-                        if (LONG[type][d]) {
+                        int dd = color_ == BLACK ? d : point_symmetry(d);
+                        if (LONG[type][dd]) {
                             int x_to = x, y_to = y;
                             while (true) {
                                 x_to += D2[d][0];

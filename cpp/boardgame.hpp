@@ -7,7 +7,7 @@
 const int BLACK = 0;
 const int WHITE = 1;
 const int EMPTY = 2;
-const int WALL = 3; 
+const int WALL = 3;
 
 inline int opponent(int color)
 {
@@ -42,6 +42,12 @@ inline bool onboard(int pos, int LX, int LY)
     return pos >= 0 && pos < LX * LY;
 }
 
+// direction
+
+// 4 0 5
+// 1 - 2
+// 6 3 7
+
 const int D2[8][2] = {
     {-1,  0},
     { 0, -1},
@@ -52,3 +58,8 @@ const int D2[8][2] = {
     { 1, -1},
     { 1,  1},
 };
+
+inline int point_symmetry(int d)
+{
+    return (d / 4) * 4 + 3 - (d % 4);
+}
