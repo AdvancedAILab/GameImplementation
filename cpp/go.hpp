@@ -197,6 +197,8 @@ namespace Go
             return oss.str();
         }
 
+        void chance(int seed=-1) {}
+
         void play(int action)
         {
             assert(legal(action));
@@ -410,7 +412,7 @@ namespace Go
                 string score_str = gnugo->communicate("final_score");
                 float abs_sc = stof(split(split(strip(score_str, '\n'), ' ')[1], '+').back());
                 sc = contains(score_str, "W+") ? -abs_sc : abs_sc;
-                
+
                 e.key_ = (state_key >> 16) << 16;
                 e.s_[0] = sc * 2;
                 scores[index] = e;

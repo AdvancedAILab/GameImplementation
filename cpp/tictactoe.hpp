@@ -94,13 +94,15 @@ namespace TicTacToe
             return oss.str();
         }
 
+        void chance(int seed=-1) {}
+
         void play(int action)
         {
             assert(legal(action));
             board_[action] = color_;
             int ax = action2x(action), ay = action2y(action);
 
-            // 一列揃ったか調べる
+            // winning check
             int xsum = 0, ysum = 0;
             for (int y = 0; y < L_; y++) xsum += board_[xy2action(ax, y)] == color_ ? 1 : 0;
             for (int x = 0; x < L_; x++) ysum += board_[xy2action(x, ay)] == color_ ? 1 : 0;
@@ -121,6 +123,8 @@ namespace TicTacToe
             record_.push_back(action);
         }
 
+        void unchance() {}
+
         void undo()
         {
             assert(!record_.empty());
@@ -140,14 +144,13 @@ namespace TicTacToe
 
         bool terminal() const
         {
-            // 終端状態かどうか返す
             return win_color_ != EMPTY || int(record_.size()) == L_ * L_;
         }
 
         float reward(bool subjective = true) const
         {
-            int robj = win_color_ == BLACK ? 1 : (win_color_ == WHITE ? -1 : 0);
-            return (subjective && color_ == WHITE) ? -robj : robj;
+            int r = win_color_ == BLACK ? 1 : (win_color_ == WHITE ? -1 : 0);
+            return (subjective && color_ == WHITE) ? -r : r;
         }
 
         bool legal(int action) const

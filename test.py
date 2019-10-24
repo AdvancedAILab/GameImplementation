@@ -6,6 +6,7 @@ classes = [
     'AnimalShogi',
     'Go',
     'Geister',
+    'FlipTicTacToe'
 ]
 
 for game in classes:

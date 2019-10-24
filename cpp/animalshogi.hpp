@@ -244,6 +244,8 @@ namespace AnimalShogi
             return oss.str();
         }
 
+        void chance(int seed=-1) {}
+
         void play(int action)
         {
             assert(legal(action));
@@ -285,6 +287,8 @@ namespace AnimalShogi
             color_ = opponent(color_);
             record_.push_back(action);
         }
+
+        void unchance() {}
 
         void undo()
         {

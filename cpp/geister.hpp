@@ -318,6 +318,8 @@ namespace Geister
             return false;
         }
 
+        void chance(int seed=-1) {}
+
         void play(int action)
         {
             assert(legal(action));
