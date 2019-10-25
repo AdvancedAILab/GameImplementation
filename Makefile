@@ -13,7 +13,7 @@ OBJS       = $(subst $(SRC_DIR),$(OBJ_DIR), $(SRCS:.cpp=.o))
 TARGET     = $(BLD_DIR)/main
 PYTARGET   = $(BLD_DIR)/games.so
 PYFLAGS    = -fPIC
-PYLDFLAGS  = -shared $(shell python3-config --cflags --ldflags)
+PYLDFLAGS  = -shared $(filter-out -Wl%,$(shell python3-config --cflags --ldflags))
 PYINCLUDES = $(INCLUDES) $(shell python3-config --includes) -I./modules/pybind11/include/
 
 DEPENDS  = $(OBJS:.o=.d)
