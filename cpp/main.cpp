@@ -22,8 +22,8 @@ int main(int argc, char *argv[])
             auto actions = state.legal_actions();
             cerr << state.to_string() << endl;
             cerr << actions << endl;
-            cerr << minimaxSearch(state) << endl;
-            cerr << alphaBetaSearch(state) << endl;
+            cerr << minimax_search(state) << endl;
+            cerr << alpha_beta_search(state) << endl;
             state.play(actions[rand() % actions.size()]);
         }
         cerr << state.to_string() << endl;

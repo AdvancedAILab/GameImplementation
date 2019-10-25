@@ -170,7 +170,7 @@ namespace TicTacToe
         pair<vector<int>, float> best_actions() const
         {
             State s(*this);
-            return alphaBetaSearch(s);
+            return alpha_beta_search(s);
         }
 
         int action_length() const

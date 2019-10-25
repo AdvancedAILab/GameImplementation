@@ -19,7 +19,7 @@ namespace Reversi
         vector<int> board_;
         int color_;
         array<int, 2> score_;
-        vector<array<int, 8>> flipped_counts_;
+        vector<array<int, 8>> flipped_counts_; // for undo
         vector<int> record_;
 
         State()
@@ -44,14 +44,16 @@ namespace Reversi
         void clear()
         {
             fill(board_.begin(), board_.end(), EMPTY);
+            color_ = BLACK;
+            record_.clear();
+
+            // original state
             int mid = (L_ - 1) / 2;
             board_[xy2action(mid, mid)] = WHITE;
             board_[xy2action(mid, mid + 1)] = BLACK;
             board_[xy2action(mid + 1, mid)] = BLACK;
             board_[xy2action(mid + 1, mid + 1)] = WHITE;
-            color_ = BLACK;
             score_.fill(2);
-            record_.clear();
         }
 
         string action2str(int action) const
@@ -147,7 +149,6 @@ namespace Reversi
 
         bool terminal() const
         {
-            // check if terminal state
             bool full = score_[0] + score_[1] == L_ * L_;
             bool perfect = score_[0] == 0 || score_[1] == 0;
             bool pass2 = record_.size() >= 2
@@ -159,7 +160,6 @@ namespace Reversi
 
         float reward(bool subjective = true) const
         {
-            // 終端状態での勝敗による報酬を返す
             int sc = score(subjective);
             if (sc > 0) return 1;
             else if (sc < 0) return -1;
@@ -181,7 +181,6 @@ namespace Reversi
 
         vector<int> legal_actions() const
         {
-            // 可能な行動リストを返す
             vector<int> actions;
             for (int i = 0; i < L_ * L_; i++) {
                 if (legal(i)) actions.push_back(i);
@@ -195,7 +194,7 @@ namespace Reversi
         pair<vector<int>, float> best_actions() const
         {
             State s(*this);
-            return alphaBetaSearch(s);
+            return alpha_beta_search(s);
         }
 
         int action_length() const
@@ -234,11 +233,10 @@ namespace Reversi
             return y * L_ + x;
         }
 
-        array<int, 8> flip_counts(int action, int color = EMPTY) const
+        array<int, 8> flip_counts(int action) const
         {
             array<int, 8> counts;
             counts.fill(0);
-            if (color == EMPTY) color = color_;
             if (!onboard(action, L_)) return counts;
             if (board_[action] != EMPTY) return counts;
             for (int d = 0; d < 8; d++) {
@@ -250,10 +248,10 @@ namespace Reversi
                     y += D2[d][1];
                     int pos = xy2action(x, y);
                     if (!onboard_xy(x, y, L_) || board_[pos] == EMPTY) {
-                        flipped = 0; // no stones will be sandwitched
+                        flipped = 0; // no stones will be sandwiched
                         break;
                     }
-                    if (board_[pos] == color) break;
+                    if (board_[pos] == color_) break;
                     flipped++;
                 }
                 counts[d] = flipped;

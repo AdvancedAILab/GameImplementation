@@ -3,27 +3,27 @@
 // search algorithm
 
 template <class state_t>
-float minimaxSearchImpl(state_t& state)
+float minimax_search_impl(state_t& state)
 {
     if (state.terminal()) return state.reward();
     float best = -10000;
     for (int action : state.legal_actions()) {
         state.play(action);
-        best = std::max(best, -minimaxSearchImpl(state));
+        best = std::max(best, -minimax_search_impl(state));
         state.undo();
     }
     return best;
 }
 
 template <class state_t>
-std::pair<std::vector<int>, float> minimaxSearch(state_t& state)
+std::pair<std::vector<int>, float> minimax_search(state_t& state)
 {
     float best = -10000;
     std::vector<int> best_actions;
     if (state.terminal()) return std::make_pair(best_actions, state.reward());
     for (int action : state.legal_actions()) {
         state.play(action);
-        float reward = -minimaxSearchImpl(state);
+        float reward = -minimax_search_impl(state);
         if (reward >= best) {
             if (reward > best) {
                 best = reward;
@@ -37,12 +37,12 @@ std::pair<std::vector<int>, float> minimaxSearch(state_t& state)
 }
 
 template <class state_t>
-float alphaBetaSearchImpl(state_t& state, float alpha, float beta)
+float alpha_beta_search_impl(state_t& state, float alpha, float beta)
 {
     if (state.terminal()) return state.reward();
     for (int action : state.legal_actions()) {
         state.play(action);
-        alpha = std::max(alpha, -alphaBetaSearchImpl(state, -beta, -alpha));
+        alpha = std::max(alpha, -alpha_beta_search_impl(state, -beta, -alpha));
         state.undo();
         if (alpha >= beta) return alpha;
     }
@@ -50,14 +50,14 @@ float alphaBetaSearchImpl(state_t& state, float alpha, float beta)
 }
 
 template <class state_t>
-std::pair<std::vector<int>, float> alphaBetaSearch(state_t& state)
+std::pair<std::vector<int>, float> alpha_beta_search(state_t& state)
 {
     float best = -10000;
     std::vector<int> best_actions;
     if (state.terminal()) return std::make_pair(best_actions, state.reward());
     for (int action : state.legal_actions()) {
         state.play(action);
-        float reward = -alphaBetaSearchImpl(state, -10000, -best + 1e-4);
+        float reward = -alpha_beta_search_impl(state, -10000, -best + 1e-4);
         if (reward >= best) {
             if (reward > best) {
                 best = reward;
