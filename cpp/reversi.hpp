@@ -66,6 +66,7 @@ namespace Reversi
 
         int str2action(const string& s) const
         {
+            if (s == "PASS") return L_ * L_;
             return xy2action(find(X, s[0]), find(Y, s[1]));
         }
 
