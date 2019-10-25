@@ -14,7 +14,7 @@ TARGET     = $(BLD_DIR)/main
 PYTARGET   = $(BLD_DIR)/games.so
 PYFLAGS    = -fPIC
 PYLDFLAGS  = -shared $(shell python3-config --cflags --ldflags)
-PYINCLUDES = $(INCLUDE) $(shell python3-config --includes) -I./modules/pybind11/include/
+PYINCLUDES = $(INCLUDES) $(shell python3-config --includes) -I./modules/pybind11/include/
 
 DEPENDS  = $(OBJS:.o=.d)
 
