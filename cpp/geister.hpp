@@ -17,12 +17,12 @@ namespace Geister
     const int RED = 1;
     const string P = "_BRbr";
     const vector<vector<string>> OPOS = {
-        // 初期に駒を配置する位置
+        // original positions of pieces
         {"B1", "C1", "D1", "E1", "B2", "C2", "D2", "E2"},
         {"B5", "C5", "D5", "E5", "B6", "C6", "D6", "E6"}
     };
     const vector<vector<array<int, 2>>> GPOS = {
-        // 到達して勝ちになる位置
+        // winning positions
         {{-1, 5}, {6, 5}},
         {{-1, 0}, {6, 0}}
     };
