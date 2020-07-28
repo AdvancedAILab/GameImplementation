@@ -104,7 +104,7 @@ namespace Go
                 STONE_KEY_[pos][2] = mt();
             }
 
-            clear();
+            reset();
         }
 
         State(const State& s):
@@ -130,7 +130,7 @@ namespace Go
             return {LX_, LY_};
         }
 
-        void clear()
+        void reset()
         {
             board_.resize(B_);
             ren_.resize(B_);

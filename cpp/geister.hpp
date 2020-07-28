@@ -50,13 +50,15 @@ namespace Geister
         vector<int> board_index_;
         long long key_;
         map<long long, int> prev_keys_;
+        mt19937_64 dice_;
         vector<int> record_;
 
         State()
         {
             board_.resize(B_);
             board_index_.resize(B_);
-            clear();
+            dice_.seed(rand());
+            reset();
         }
 
         State(const State& s):
@@ -75,7 +77,7 @@ namespace Geister
             return {L_, L_};
         }
 
-        void clear(long long seed = 0)
+        void reset()
         {
             fill(board_.begin(), board_.end(), -1);
             color_ = BLACK;
@@ -88,11 +90,10 @@ namespace Geister
             record_.clear();
 
             // randomly setting original position
-            mt19937_64 mt(seed);
             for (int c = 0; c < 2; c++) {
                 array<int, 8> seq;
                 for (int i = 0; i < 8; i++) seq[i] = i;
-                shuffle(seq.begin(), seq.end(), mt);
+                shuffle(seq.begin(), seq.end(), dice_);
                 for (int t = 0; t < 2; t++) {
                     for (int i = t * 4; i < (t + 1) * 4; i++) {
                         int index = seq[i];
@@ -377,12 +378,10 @@ namespace Geister
             return win_color_ != -1;
         }
 
-        float reward(bool subjective = true) const
+        vector<float> reward() const
         {
-            int r = 0;
-            if (win_color_ == color_) r = 1;
-            else if (win_color_ == opponent(color_)) r = -1;
-            return subjective && color_ == WHITE ? -r : r;
+            float r = win_color_ == BLACK ? 1 : (win_color_ == WHITE ? -1 : 0);
+            return {r, -r};
         }
 
         bool legal(int action) const

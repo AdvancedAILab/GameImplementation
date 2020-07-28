@@ -25,7 +25,7 @@ namespace Reversi
         State()
         {
             board_.resize(L_ * L_);
-            clear();
+            reset();
         }
 
         State(const State& s):
@@ -41,7 +41,7 @@ namespace Reversi
             return {L_, L_};
         }
 
-        void clear()
+        void reset()
         {
             fill(board_.begin(), board_.end(), EMPTY);
             color_ = BLACK;

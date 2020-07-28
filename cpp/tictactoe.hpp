@@ -25,7 +25,7 @@ namespace TicTacToe
         State()
         {
             board_.resize(L_ * L_);
-            clear();
+            reset();
         }
 
         State(const State& s):
@@ -39,7 +39,7 @@ namespace TicTacToe
             return {L_, L_};
         }
 
-        void clear()
+        void reset()
         {
             fill(board_.begin(), board_.end(), EMPTY);
             color_ = BLACK;

@@ -26,9 +26,9 @@ namespace FlipTicTacToe
         score_(s.score_),
         flip_record_(s.flip_record_) {}
 
-        void clear()
+        void reset()
         {
-            base_t::clear();
+            base_t::reset();
             score_.fill(0);
             flip_record_.clear();
         }

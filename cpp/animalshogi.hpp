@@ -72,7 +72,7 @@ namespace AnimalShogi
 
         State()
         {
-            clear();
+            reset();
         }
 
         State(const State& s):
@@ -105,7 +105,7 @@ namespace AnimalShogi
             }
         }
 
-        void clear()
+        void reset()
         {
             board_.fill(EMPTY);
             for (auto& h : hand_) {
