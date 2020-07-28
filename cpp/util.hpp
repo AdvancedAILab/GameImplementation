@@ -12,6 +12,7 @@
 #include <sstream>
 #include <algorithm>
 #include <numeric>
+#include <map>
 
 static bool contains(const std::string& s, const std::string& t)
 {
@@ -80,6 +81,21 @@ std::ostream& operator <<(std::ostream& ost, const std::array<T, N>& v)
 }
 
 template <class T0, class T1>
+std::ostream& operator <<(std::ostream& ost, const std::map<T0, T1>& v)
+{
+    ost << "{";
+    if (v.size() > 0)
+    {
+        int cnt = 0;
+        for (auto kv : v) {
+            ost << kv.first << ":" << kv.second;
+            if (cnt++ < (int)v.size()) ost << ", ";
+        }
+    }
+    return ost;
+}
+
+template <class T0, class T1>
 std::ostream& operator <<(std::ostream& ost, const std::pair<T0, T1>& v)
 {
     ost << "(" << v.first << ", " << v.second << ")";
@@ -109,7 +125,7 @@ public:
         }
         return false;
     }
- 
+
     int start(const char* const file, char *const argv[]) {
         const int kRead = 0, kWrite = 1;
 
