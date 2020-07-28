@@ -318,7 +318,6 @@ namespace Go
 
         float reward(bool subjective = true) const
         {
-            // 終端状態での勝敗による報酬を返す
             float sc = score(subjective);
             if (sc > 0) return 1;
             else if (sc < 0) return -1;
@@ -351,7 +350,6 @@ namespace Go
 
         vector<int> legal_actions() const
         {
-            // 可能な行動リストを返す
             vector<int> actions;
             for (int pos = 0; pos < B_; pos++) {
                 if (legal(pos)) {
