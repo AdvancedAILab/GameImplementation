@@ -103,7 +103,7 @@ namespace FlipTicTacToe
             return score_[0] + score_[1] > 0 || int(flip_record_.size()) == L_ * L_;
         }
 
-        vector<float> feature() const
+        vector<float> observation() const
         {
             const int b = base_t::L_ * base_t::L_;
             vector<float> f(3 * b, 0.0f);

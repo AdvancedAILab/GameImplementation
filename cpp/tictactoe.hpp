@@ -142,15 +142,20 @@ namespace TicTacToe
             for (const string& s : ss) play(str2action(s));
         }
 
+        int turn() const
+        {
+            return color_;
+        }
+
         bool terminal() const
         {
             return win_color_ != EMPTY || int(record_.size()) == L_ * L_;
         }
 
-        float reward(bool subjective = true) const
+        vector<float> reward() const
         {
-            int r = win_color_ == BLACK ? 1 : (win_color_ == WHITE ? -1 : 0);
-            return (subjective && color_ == WHITE) ? -r : r;
+            float r = win_color_ == BLACK ? 1 : (win_color_ == WHITE ? -1 : 0);
+            return {r, -r};
         }
 
         bool legal(int action) const
@@ -178,7 +183,12 @@ namespace TicTacToe
             return L_ * L_;
         }
 
-        vector<float> feature() const
+        vector<int> players() const
+        {
+            return {0, 1};
+        }
+
+        vector<float> observation() const
         {
             vector<float> f(2 * L_ * L_, 0.0f);
             for (int pos = 0; pos < L_ * L_; pos++) {

@@ -306,6 +306,11 @@ namespace Go
             for (const string& s : ss) play(str2action(s));
         }
 
+        int turn() const
+        {
+            return color_;
+        }
+
         bool terminal() const
         {
             // ignore 3-ko infinite games
@@ -370,7 +375,12 @@ namespace Go
             return B_ + 1;
         }
 
-        vector<float> feature() const
+        vector<int> players() const
+        {
+            return {0, 1};
+        }
+
+        vector<float> observation() const
         {
             vector<float> f(3 * LX_ * LY_, 0.0f);
             for (int pos = 0; pos < B_; pos++) {
@@ -381,7 +391,7 @@ namespace Go
             return f;
         }
 
-        int score(bool subjective = true) const
+        int score(int color) const
         {
             float sc = 0;
 
@@ -416,7 +426,7 @@ namespace Go
                 scores[index] = e;
             }
 
-            if (subjective && color_ == WHITE) sc = -sc;
+            if (color == WHITE) sc = -sc;
             return sc;
         }
 

@@ -5,7 +5,7 @@
 template <class state_t>
 float minimax_search_impl(state_t& state)
 {
-    if (state.terminal()) return state.reward();
+    if (state.terminal()) return state.reward()[state.turn()];
     float best = -10000;
     for (int action : state.legal_actions()) {
         state.play(action);
@@ -20,7 +20,7 @@ std::pair<std::vector<int>, float> minimax_search(state_t& state)
 {
     float best = -10000;
     std::vector<int> best_actions;
-    if (state.terminal()) return std::make_pair(best_actions, state.reward());
+    if (state.terminal()) return std::make_pair(best_actions, state.reward()[state.turn()]);
     for (int action : state.legal_actions()) {
         state.play(action);
         float reward = -minimax_search_impl(state);
@@ -39,7 +39,7 @@ std::pair<std::vector<int>, float> minimax_search(state_t& state)
 template <class state_t>
 float alpha_beta_search_impl(state_t& state, float alpha, float beta)
 {
-    if (state.terminal()) return state.reward();
+    if (state.terminal()) return state.reward()[state.turn()];
     for (int action : state.legal_actions()) {
         state.play(action);
         alpha = std::max(alpha, -alpha_beta_search_impl(state, -beta, -alpha));
@@ -54,7 +54,7 @@ std::pair<std::vector<int>, float> alpha_beta_search(state_t& state)
 {
     float best = -10000;
     std::vector<int> best_actions;
-    if (state.terminal()) return std::make_pair(best_actions, state.reward());
+    if (state.terminal()) return std::make_pair(best_actions, state.reward()[state.turn()]);
     for (int action : state.legal_actions()) {
         state.play(action);
         float reward = -alpha_beta_search_impl(state, -10000, -best + 1e-4);

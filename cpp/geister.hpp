@@ -367,6 +367,11 @@ namespace Geister
             for (const string& s : ss) play(str2action(s));
         }
 
+        int turn() const
+        {
+            return color_;
+        }
+
         bool terminal() const
         {
             return win_color_ != -1;
@@ -428,7 +433,12 @@ namespace Geister
             return 4 * B_;
         }
 
-        vector<float> feature() const
+        vector<int> players() const
+        {
+            return {0, 1};
+        }
+
+        vector<float> observation() const
         {
             vector<float> f(2 * L_ * L_, 0.0f);
             int col = color_, opp = opponent(color_);

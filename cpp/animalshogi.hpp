@@ -341,27 +341,33 @@ namespace AnimalShogi
             for (const string& s : ss) play(str2action(s));
         }
 
+        int turn() const
+        {
+            return color_;
+        }
+
         bool terminal() const
         {
             if (keys_.count(key_ ^ color_) > 0) return true;
-            return reward() != 0;
+            return reward()[0] != 0;
         }
 
-        float reward(bool subjective = true) const
+        vector<float> reward() const
         {
-            if (keys_.count(key_ ^ color_) > 0) return 0; // repetition
             float r = 0;
-            // catch win
-            if (hand_[BLACK][LION] > 0) r =  1;
-            if (hand_[WHITE][LION] > 0) r = -1;
-            // try win
-            int target_piece = typecolor2piece(LION, color_);
-            for (int y = 0; y < LY; y++) {
-                if (color_ == BLACK && board_[xy2position(0,      y)] == target_piece) r =  1;
-                if (color_ == WHITE && board_[xy2position(LX - 1, y)] == target_piece) r = -1;
+            if (keys_.count(key_ ^ color_) == 0) // not repetition
+            {
+                // catch win
+                if (hand_[BLACK][LION] > 0) r =  1;
+                if (hand_[WHITE][LION] > 0) r = -1;
+                // try win
+                int target_piece = typecolor2piece(LION, color_);
+                for (int y = 0; y < LY; y++) {
+                    if (color_ == BLACK && board_[xy2position(0,      y)] == target_piece) r =  1;
+                    if (color_ == WHITE && board_[xy2position(LX - 1, y)] == target_piece) r = -1;
+                }
             }
-            if (subjective && color_ == WHITE) r = -r;
-            return r;
+            return {r, -r};
         }
 
         bool legal(int action) const
@@ -444,7 +450,12 @@ namespace AnimalShogi
             return (B + 4) * B;
         }
 
-        vector<float> feature() const
+        vector<int> players() const
+        {
+            return {0, 1};
+        }
+
+        vector<float> observation() const
         {
             vector<float> f(27 * LX * LY, 0.0f);
             // board

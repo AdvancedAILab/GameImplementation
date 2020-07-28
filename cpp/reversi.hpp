@@ -148,6 +148,11 @@ namespace Reversi
             for (const string& s : ss) play(str2action(s));
         }
 
+        int turn() const
+        {
+            return color_;
+        }
+
         bool terminal() const
         {
             bool full = score_[0] + score_[1] == L_ * L_;
@@ -159,12 +164,11 @@ namespace Reversi
             return full || perfect || pass2;
         }
 
-        float reward(bool subjective = true) const
+        vector<float> reward() const
         {
-            int sc = score(subjective);
-            if (sc > 0) return 1;
-            else if (sc < 0) return -1;
-            return 0;
+            int sc = score(BLACK);
+            float r = sc > 0 ? 1 : (sc < 0 ? -1 : 0);
+            return {r, -r};
         }
 
         bool legal(int action) const
@@ -203,7 +207,12 @@ namespace Reversi
             return L_ * L_ + 1;
         }
 
-        vector<float> feature() const
+        vector<int> players() const
+        {
+            return {0, 1};
+        }
+
+        vector<float> observation() const
         {
             vector<float> f(2 * L_ * L_, 0.0f);
             for (int pos = 0; pos < L_ * L_; pos++) {
@@ -213,10 +222,9 @@ namespace Reversi
             return f;
         }
 
-        int score(bool subjective = true) const
+        int score(int color) const
         {
-            int diff = score_[0] - score_[1];
-            return (subjective && color_ == WHITE) ? -diff : diff;
+            return score_[color] - score_[opponent(color)];
         }
 
         int action2x(int action) const

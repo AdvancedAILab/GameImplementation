@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
             state.play(actions[rand() % actions.size()]);
         }
         cerr << state.to_string() << endl;
-        cerr << "reward = " << state.reward(false) << endl;
+        cerr << "reward = " << state.reward() << endl;
     }
 
     Reversi::init();
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
             state.play(actions[rand() % actions.size()]);
         }
         cerr << state.to_string() << endl;
-        cerr << "reward = " << state.reward(false) << endl;
+        cerr << "reward = " << state.reward() << endl;
     }
 
     AnimalShogi::init();
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
             state.play(actions[rand() % actions.size()]);
         }
         cerr << state.to_string() << endl;
-        cerr << "reward = " << state.reward(false) << endl;
+        cerr << "reward = " << state.reward() << endl;
     }
 
     Go::init();
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
             state.play(actions[rand() % actions.size()]);
         }
         cerr << state.to_string() << endl;
-        cerr << "reward = " << state.reward(false) << endl;
+        cerr << "reward = " << state.reward() << endl;
     }
 
     Geister::init();
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
             state.play(actions[rand() % actions.size()]);
         }
         cerr << state.to_string() << endl;
-        cerr << "reward = " << state.reward(false) << endl;
+        cerr << "reward = " << state.reward() << endl;
     }
 
     FlipTicTacToe::init();
@@ -95,6 +95,6 @@ int main(int argc, char *argv[])
             state.play(actions[rand() % actions.size()]);
         }
         cerr << state.to_string() << endl;
-        cerr << "reward = " << state.reward(false) << endl;
+        cerr << "reward = " << state.reward() << endl;
     }
 }
