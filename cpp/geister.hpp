@@ -440,7 +440,7 @@ namespace Geister
 
         vector<float> observation() const
         {
-            vector<float> f(2 * L_ * L_, 0.0f);
+            vector<float> f(8 * L_ * L_, 0.0f);
             int col = color_, opp = opponent(color_);
 
             int p[4] = {
