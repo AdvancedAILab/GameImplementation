@@ -20,9 +20,9 @@ template <class state_t>
 struct PythonState : state_t
 {
     PythonState(): state_t() {}
-    PythonState(const map<string, string>& args): state_t() {}
+    PythonState(const py::dict& args): state_t() {}
 
-    void reset(const map<string, string>& args)
+    void reset(const py::dict& args)
     {
         state_t::reset();
     }
@@ -45,7 +45,7 @@ struct PythonState : state_t
 
 PYBIND11_MODULE(games, m)
 {
-    const map<string, string> null_map;
+    const py::dict null_dict;
     m.doc() = "implementation of game";
 
     TicTacToe::init();
@@ -53,14 +53,14 @@ PYBIND11_MODULE(games, m)
 
     py::class_<PyState0>(m, "TicTacToe")
     .def(pybind11::init<>(), "constructor")
-    .def(pybind11::init<const map<string, string>&>(), "constructor")
+    .def(pybind11::init<const py::dict&>(), "constructor")
     .def("action2str",    &PyState0::action2str, "action index to string")
     .def("str2action",    &PyState0::str2action, "string to action index")
     .def("str2path",      &PyState0::str2path, "string to ations list")
     .def("record_string", &PyState0::record_string, "string output of current path")
     .def("__str__",       &PyState0::to_string, "string output")
     .def("copy",          &PyState0::copy, "deep copy")
-    .def("reset",         &PyState0::reset, "initialize state", py::arg("game_args") = null_map)
+    .def("reset",         &PyState0::reset, "initialize state", py::arg("game_args") = null_dict)
     .def("turn",          &PyState0::turn, "turn player")
     .def("legal_actions", &PyState0::legal_actions, "legal actions")
     .def("best_actions",  &PyState0::best_actions, "best actions by minimax search")
@@ -78,14 +78,14 @@ PYBIND11_MODULE(games, m)
 
     py::class_<PyState1>(m, "Reversi")
     .def(pybind11::init<>(), "constructor")
-    .def(pybind11::init<const map<string, string>&>(), "constructor")
+    .def(pybind11::init<const py::dict&>(), "constructor")
     .def("action2str",    &PyState1::action2str, "action index to string")
     .def("str2action",    &PyState1::str2action, "string to action index")
     .def("str2path",      &PyState1::str2path, "string to ations list")
     .def("record_string", &PyState1::record_string, "string output of current path")
     .def("__str__",       &PyState1::to_string, "string output")
     .def("copy",          &PyState1::copy, "deep copy")
-    .def("reset",         &PyState1::reset, "initialize state", py::arg("game_args") = null_map)
+    .def("reset",         &PyState1::reset, "initialize state", py::arg("game_args") = null_dict)
     .def("turn",          &PyState1::turn, "turn player")
     .def("legal_actions", &PyState1::legal_actions, "legal actions")
     .def("action_length", &PyState1::action_length, "the number of legal action labels")
@@ -102,14 +102,14 @@ PYBIND11_MODULE(games, m)
 
     py::class_<PyState2>(m, "AnimalShogi")
     .def(pybind11::init<>(), "constructor")
-    .def(pybind11::init<const map<string, string>&>(), "constructor")
+    .def(pybind11::init<const py::dict&>(), "constructor")
     .def("action2str",    &PyState2::action2str, "action index to string")
     .def("str2action",    &PyState2::str2action, "string to action index")
     .def("str2path",      &PyState2::str2path, "string to ations list")
     .def("record_string", &PyState2::record_string, "string output of current path")
     .def("__str__",       &PyState2::to_string, "string output")
     .def("copy",          &PyState2::copy, "deep copy")
-    .def("reset",         &PyState2::reset, "initialize state", py::arg("game_args") = null_map)
+    .def("reset",         &PyState2::reset, "initialize state", py::arg("game_args") = null_dict)
     .def("turn",          &PyState2::turn, "turn player")
     .def("legal_actions", &PyState2::legal_actions, "legal actions")
     .def("action_length", &PyState2::action_length, "the number of legal action labels")
@@ -126,14 +126,14 @@ PYBIND11_MODULE(games, m)
 
     py::class_<PyState3>(m, "Go")
     .def(pybind11::init<>(), "constructor")
-    .def(pybind11::init<const map<string, string>&>(), "constructor")
+    .def(pybind11::init<const py::dict&>(), "constructor")
     .def("action2str",    &PyState3::action2str, "action index to string")
     .def("str2action",    &PyState3::str2action, "string to action index")
     .def("str2path",      &PyState3::str2path, "string to ations list")
     .def("record_string", &PyState3::record_string, "string output of current path")
     .def("__str__",       &PyState3::to_string, "string output")
     .def("copy",          &PyState3::copy, "deep copy")
-    .def("reset",         &PyState3::reset, "initialize state", py::arg("game_args") = null_map)
+    .def("reset",         &PyState3::reset, "initialize state", py::arg("game_args") = null_dict)
     .def("turn",          &PyState3::turn, "turn player")
     .def("legal_actions", &PyState3::legal_actions, "legal actions")
     .def("action_length", &PyState3::action_length, "the number of legal action labels")
@@ -150,14 +150,14 @@ PYBIND11_MODULE(games, m)
 
     py::class_<PyState4>(m, "Geister")
     .def(pybind11::init<>(), "constructor")
-    .def(pybind11::init<const map<string, string>&>(), "constructor")
+    .def(pybind11::init<const py::dict&>(), "constructor")
     .def("action2str",    &PyState4::action2str, "action index to string")
     .def("str2action",    &PyState4::str2action, "string to action index")
     .def("str2path",      &PyState4::str2path, "string to ations list")
     .def("record_string", &PyState4::record_string, "string output of current path")
     .def("__str__",       &PyState4::to_string, "string output")
     .def("copy",          &PyState4::copy, "deep copy")
-    .def("reset",         &PyState4::reset, "initialize state", py::arg("game_args") = null_map)
+    .def("reset",         &PyState4::reset, "initialize state", py::arg("game_args") = null_dict)
     .def("turn",          &PyState4::turn, "turn player")
     .def("legal_actions", &PyState4::legal_actions, "legal actions")
     .def("action_length", &PyState4::action_length, "the number of legal action labels")
@@ -174,14 +174,14 @@ PYBIND11_MODULE(games, m)
 
     py::class_<PyState5>(m, "FlipTicTacToe")
     .def(pybind11::init<>(), "constructor")
-    .def(pybind11::init<const map<string, string>&>(), "constructor")
+    .def(pybind11::init<const py::dict&>(), "constructor")
     .def("action2str",    &PyState5::action2str, "action index to string")
     .def("str2action",    &PyState5::str2action, "string to action index")
     .def("str2path",      &PyState5::str2path, "string to ations list")
     .def("record_string", &PyState5::record_string, "string output of current path")
     .def("__str__",       &PyState5::to_string, "string output")
     .def("copy",          &PyState5::copy, "deep copy")
-    .def("reset",         &PyState5::reset, "initialize state", py::arg("game_args") = null_map)
+    .def("reset",         &PyState5::reset, "initialize state", py::arg("game_args") = null_dict)
     .def("turn",          &PyState5::turn, "turn player")
     .def("legal_actions", &PyState5::legal_actions, "legal actions")
     .def("action_length", &PyState5::action_length, "the number of legal action labels")
