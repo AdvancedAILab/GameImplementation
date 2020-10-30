@@ -439,27 +439,33 @@ namespace Geister
 
         vector<float> observation() const
         {
-            vector<float> f(8 * L_ * L_, 0.0f);
+            vector<float> f(25 * L_ * L_, 0.0f);
             int col = color_, opp = opponent(color_);
 
             int p[4] = {
                 colortype2piece(col, 0), colortype2piece(col, 1),
                 colortype2piece(opp, 0), colortype2piece(opp, 1)
             };
-            float c[4] = {
-                log2f((float)piece_cnt_[p[0]]), log2f((float)piece_cnt_[p[1]]),
-                log2f((float)piece_cnt_[p[2]]), log2f((float)piece_cnt_[p[3]])
+            int c[4] = {
+                piece_cnt_[p[0]], piece_cnt_[p[1]],
+                piece_cnt_[p[2]], piece_cnt_[p[3]]
             };
 
             for (int pos = 0; pos < B_; pos++) {
-                if (color_ == BLACK) f[pos] = 1;
-                if (board_[pos] == p[0]) f[pos + B_] = 1;
-                if (board_[pos] == p[1]) f[pos + 2 * B_] = 1;
-                if (board_[pos] == p[2] || board_[pos] == p[3]) f[pos + 3 * B_] = 1;
-                f[pos + 4 * B_] = c[0];
-                f[pos + 5 * B_] = c[1];
-                f[pos + 6 * B_] = c[2];
-                f[pos + 7 * B_] = c[3];
+                // scalar
+                f[pos] = 1;
+                if (color_ == BLACK) f[pos + B_] = 1;
+                f[pos + (2  + c[0] - 1) * B_] = 1;
+                f[pos + (6  + c[1] - 1) * B_] = 1;
+                f[pos + (10 + c[2] - 1) * B_] = 1;
+                f[pos + (14 + c[3] - 1) * B_] = 1;
+
+                // board
+                f[pos + 18 * B_] = 1;
+                if (board_[pos] == p[0] || board_[pos] == p[1]) f[pos + 19 * B_] = 1;
+                if (board_[pos] == p[2] || board_[pos] == p[3]) f[pos + 20 * B_] = 1;
+                if (board_[pos] == p[0]) f[pos + 21 * B_] = 1;
+                if (board_[pos] == p[1]) f[pos + 22 * B_] = 1;
             }
 
             return f;
